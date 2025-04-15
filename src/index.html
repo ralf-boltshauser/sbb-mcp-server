@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SBB MCP Server</title>
+    <style>
+      :root {
+        --primary: #eb2525;
+        --primary-dark: #d81d1d;
+        --text: #1f2937;
+        --text-light: #6b7280;
+        --bg: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.8);
+        --feature-bg: rgba(252, 248, 248, 0.8);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--text);
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 4rem;
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.025em;
+      }
+
+      .subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card,
+      .features {
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 3rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: fadeIn 0.8s ease-out 0.2s both;
+      }
+
+      .card h2 {
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: var(--primary);
+      }
+
+      .command {
+        background: #f8fafc;
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        font-family: "JetBrains Mono", monospace;
+        margin: 1.5rem 0;
+        word-break: break-all;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .command:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .command::after {
+        content: "Click to copy";
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--primary);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-bottom-left-radius: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .command:hover::after {
+        opacity: 1;
+      }
+
+      .tools {
+        margin-top: 1rem;
+      }
+
+      .tool {
+        background: var(--feature-bg);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tool:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .tool-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .tool-header h3 {
+        color: var(--primary);
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .tool-toggle {
+        color: var(--text-light);
+        font-size: 1.5rem;
+        transition: transform 0.2s ease;
+      }
+
+      .tool-description {
+        color: var(--text-light);
+        margin-bottom: 0;
+      }
+
+      .tool-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        opacity: 0;
+      }
+
+      .tool.expanded .tool-details {
+        max-height: 500px;
+        opacity: 1;
+        margin-top: 1rem;
+      }
+
+      .tool.expanded .tool-toggle {
+        transform: rotate(180deg);
+      }
+
+      .tool-example {
+        background: #1e293b;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+
+      .code-block {
+        padding: 1rem;
+        margin: 0;
+      }
+
+      .code-block pre {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+
+      .code-block code {
+        color: #e2e8f0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .feature {
+        padding: 2rem;
+        background: var(--feature-bg);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.8s ease-out 0.4s both;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature h3 {
+        color: var(--primary);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+
+      .feature p {
+        margin: 0;
+        color: var(--text-light);
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        margin-top: auto;
+        animation: fadeIn 0.8s ease-out 0.6s both;
+      }
+
+      @media (min-width: 1400px) {
+        .container {
+          max-width: 1400px;
+        }
+
+        .card,
+        .features {
+          max-width: 1200px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 3rem 1.5rem;
+        }
+
+        .card {
+          padding: 2rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .tool-example {
+          margin: 0 -1rem;
+          border-radius: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          padding: 2rem 1rem;
+        }
+
+        h1 {
+          font-size: 2.25rem;
+        }
+
+        .card {
+          padding: 1.5rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        .code-block {
+          padding: 0.75rem;
+          font-size: 0.8125rem;
+        }
+
+        .command {
+          padding: 1rem;
+          font-size: 0.875rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>SBB Connections MCP Server</h1>
+        <p class="subtitle">
+          Access Swiss public transport connections through MCP. Simple, fast,
+          and reliable.
+        </p>
+      </header>
+
+      <div class="card">
+        <h2>Connect to this Server</h2>
+        <p>Use the following command to connect to this server:</p>
+        <div class="command" id="connect-command">
+          npx -y mcp-remote <span id="server-url">loading...</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Available Tools</h2>
+        <div class="tools">
+          <div class="tool" onclick="toggleTool(this)">
+            <div class="tool-header">
+              <h3>Find Connection Tool</h3>
+              <span class="tool-toggle">▼</span>
+            </div>
+            <p class="tool-description">
+              Find train, bus, and other public transport connections between
+              any two locations in Switzerland.
+            </p>
+            <div class="tool-details">
+              <div class="tool-example">
+                <div class="code-block">
+                  <pre><code>// Input parameters:
+{
+  "from": string,    // Departure location (e.g., "Zurich HB")
+  "to": string,      // Arrival location (e.g., "Bern")
+  "date": string?,   // Optional: Date in YYYY-MM-DD format
+  "time": string?    // Optional: Time in HH:mm format
+}
+
+// Example usage:
+{
+  "from": "Zurich HB",
+  "to": "Bern",
+  "date": "2024-03-20",
+  "time": "14:30"
+}
+
+// Response:
+[
+  {
+    "from": {
+      "station": "Zürich HB",
+      "departure": "2024-03-20T14:32:00+01:00",
+      "platform": "11"
+    },
+    "to": {
+      "station": "Bern",
+      "arrival": "2024-03-20T15:28:00+01:00",
+      "platform": "7"
+    },
+    "duration": "00d00:56:00"
+  }
+]</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <h3>Real-time Data</h3>
+          <p>
+            Get up-to-date connection information directly from the Swiss public
+            transport API.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>Simple Integration</h3>
+          <p>
+            Easy to use with any MCP client - perfect for building travel
+            applications.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>Comprehensive Coverage</h3>
+          <p>
+            Access connections for trains, buses, trams, and other public
+            transport across Switzerland.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        Powered by
+        <a
+          href="https://transport.opendata.ch/"
+          style="text-decoration: underline; color: var(--primary)"
+          >Swiss Transport API</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      // Update the server URL dynamically
+      const serverUrl = window.location.origin + "/sse";
+      document.getElementById("server-url").textContent = serverUrl;
+
+      // Add copy functionality
+      const command = document.getElementById("connect-command");
+      command.addEventListener("click", () => {
+        const text = `npx -y mcp-remote ${serverUrl}`;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = command.textContent;
+          command.textContent = "Copied to clipboard!";
+          setTimeout(() => {
+            command.textContent = originalText;
+          }, 2000);
+        });
+      });
+
+      // Tool expansion toggle
+      function toggleTool(element) {
+        element.classList.toggle("expanded");
+      }
+    </script>
+  </body>
+</html>

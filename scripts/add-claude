@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+# Get the absolute path of the current directory
+CURRENT_DIR=$(pwd)
+
+# Create the configuration JSON
+CONFIG_JSON='{
+  "mcpServers": {
+    "echo-server": {
+      "command": "node",
+      "args": ["'$CURRENT_DIR'/dist/index.cjs"]
+    }
+  }
+}'
+
+# Create the config directory if it doesn't exist
+mkdir -p ~/Library/Application\ Support/Claude
+
+# Write the configuration to the file
+echo "$CONFIG_JSON" > ~/Library/Application\ Support/Claude/claude_desktop_config.json
+
+echo "✅ MCP server configuration has been added to Claude Desktop"
+echo "Please restart Claude Desktop for the changes to take effect" 
