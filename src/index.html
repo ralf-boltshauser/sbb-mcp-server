@@ -376,15 +376,17 @@
   "from": string,    // Departure location (e.g., "Zurich HB")
   "to": string,      // Arrival location (e.g., "Bern")
   "date": string?,   // Optional: Date in YYYY-MM-DD format
-  "time": string?    // Optional: Time in HH:mm format
+  "time": string?,   // Optional: Time in HH:mm format
+  "isArrivalTime": boolean?  // Optional: If true, treats time as arrival time (default: false)
 }
 
-// Example usage:
+// Example usage (finding connections arriving at 14:30):
 {
   "from": "Zurich HB",
   "to": "Bern",
   "date": "2024-03-20",
-  "time": "14:30"
+  "time": "14:30",
+  "isArrivalTime": true
 }
 
 // Response:
@@ -392,15 +394,15 @@
   {
     "from": {
       "station": "Zürich HB",
-      "departure": "2024-03-20T14:32:00+01:00",
+      "departure": "2024-03-20T13:32:00+01:00",
       "platform": "11"
     },
     "to": {
       "station": "Bern",
-      "arrival": "2024-03-20T15:28:00+01:00",
+      "arrival": "2024-03-20T14:30:00+01:00",
       "platform": "7"
     },
-    "duration": "00d00:56:00"
+    "duration": "00d00:58:00"
   }
 ]</code></pre>
                 </div>

@@ -41,8 +41,14 @@ server.tool(
     to: z.string().describe("Arrival location"),
     date: z.string().optional().describe("Date in format YYYY-MM-DD"),
     time: z.string().optional().describe("Time in format HH:mm"),
+    isArrivalTime: z
+      .boolean()
+      .optional()
+      .describe(
+        "If true, the specified time is treated as arrival time. Default is false (departure time)"
+      ),
   },
-  async ({ from, to, date, time }) => {
+  async ({ from, to, date, time, isArrivalTime }) => {
     try {
       const baseUrl = "http://transport.opendata.ch/v1/connections";
       const params = new URLSearchParams({
@@ -50,6 +56,7 @@ server.tool(
         to,
         ...(date && { date }),
         ...(time && { time }),
+        ...(isArrivalTime && { isArrivalTime: "1" }),
         limit: "3", // Return 3 connections by default
       });
 
