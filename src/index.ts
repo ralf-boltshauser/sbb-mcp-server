@@ -63,26 +63,11 @@ server.tool(
       const response = await fetch(`${baseUrl}?${params}`);
       const data = await response.json();
 
-      // Format the response to be more concise
-      const connections = data.connections.map((conn: any) => ({
-        from: {
-          station: conn.from.station.name,
-          departure: conn.from.departure,
-          platform: conn.from.platform,
-        },
-        to: {
-          station: conn.to.station.name,
-          arrival: conn.to.arrival,
-          platform: conn.to.platform,
-        },
-        duration: conn.duration,
-      }));
-
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(connections, null, 2),
+            text: JSON.stringify(data, null, 2),
           },
         ],
       };
