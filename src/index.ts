@@ -7,6 +7,8 @@ import express, { Request, Response } from "express";
 import path from "path";
 import { z } from "zod";
 
+const PROJECT_ROOT = process.cwd();
+
 const server = new McpServer({
   name: "SBB Transport",
   version: "1.0.0",
@@ -108,6 +110,9 @@ server.prompt("echo", { message: z.string() }, ({ message }) => ({
 
 // SSE
 const app = express();
+
+// Serve static files from the public directory
+app.use(express.static(path.join(PROJECT_ROOT, "public")));
 
 // to support multiple simultaneous connections we have a lookup object from
 // sessionId to transport

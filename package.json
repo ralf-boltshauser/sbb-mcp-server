@@ -4,10 +4,12 @@
   "description": "ModelContextProtocol typescript server starter",
   "type": "module",
   "scripts": {
+    "prebuild": "mkdir -p dist public",
     "build": "esbuild src/index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' && pnpm run make-executable && cp src/index.html dist/index.html",
     "make-executable": "chmod +x dist/index.cjs",
     "start": "node dist/index.cjs",
-    "watch": "nodemon --watch src --ext ts --exec 'esbuild src/index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js=\"#!/usr/bin/env node\" && cp src/index.html dist/index.html && node dist/index.cjs'",
+    "prewatch": "pnpm run prebuild",
+    "watch": "nodemon --watch src --ext ts,html --exec 'pnpm run build && node dist/index.cjs'",
     "inspect": "pnpx @modelcontextprotocol/inspector node dist/index.cjs",
     "dev": "concurrently \"pnpm run watch\" \"pnpm run inspect\"",
     "add-claude": "bash ./scripts/add-claude",

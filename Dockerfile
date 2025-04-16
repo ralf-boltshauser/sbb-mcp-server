@@ -14,7 +14,7 @@ COPY package.json pnpm-lock.yaml ./
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
+# Copy source code and public directory
 COPY . .
 
 # Build the application
@@ -38,6 +38,9 @@ RUN pnpm install --prod --frozen-lockfile
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Copy public directory
+COPY --from=builder /app/public ./public
 
 # Copy index.html
 COPY src/index.html ./dist
